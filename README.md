@@ -1,4 +1,4 @@
-# Data Science Coursera
+# Data Science Coursera - Developing Data Products
 ## Week 2 Assignment
 
 All code can be found here:

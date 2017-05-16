@@ -1,13 +1,14 @@
 ---
 title: "DataProduct_Assignment1"
 author: "Jared Prins"
+date: May 16, 2017
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
-#setwd("E:\\_Personal\\Developing Data Products\\Assignment1")
+setwd("E:\\_Personal\\Developing Data Products\\Assignment1")
 rds.filename <- 'Property_Assessment_Data.rds'
 censusfilename <- "census.rds"
 
@@ -42,11 +43,12 @@ propertyIcon <- makeIcon(
 ```
 
 ## City of Edmonton Property Assessments Data Visualizations
-#### Data as of: December 31, 2017
 
 The following four charts are for illustration only, for comparing 4 visualizations that map Property Assessment data in the City of Edmonton.
 
 ### Data
+
+Using data as of December 31, 2017.
 
 Assessment data comes from Edmonton's open data portal:
 https://data.edmonton.ca/City-Administration/Property-Assessment-Data/q7d6-ambg

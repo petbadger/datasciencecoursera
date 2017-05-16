@@ -1,0 +1,122 @@
+---
+title: "DataProduct_Assignment1"
+author: "Jared Prins"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+#setwd("E:\\_Personal\\Developing Data Products\\Assignment1")
+rds.filename <- 'Property_Assessment_Data.rds'
+censusfilename <- "census.rds"
+
+Property_Assessment_Data <- readRDS(rds.filename)
+dfCensus <- readRDS(censusfilename)
+
+
+#filter out condos
+library(dplyr)
+
+df <- Property_Assessment_Data %>%
+  filter(Assessment_Class == "Residential"  ) %>% 
+  select(Neighbourhood, Assessed_Value_Dollar, Assessed_Value_Amount, Latitude, Longitude) %>%
+  filter(Assessed_Value_Amount > 0) %>%
+  group_by(Neighbourhood) %>%
+  slice(which.max(Assessed_Value_Amount))
+
+
+#Join by Neighbourhood
+joined <- inner_join(df, dfCensus, by="Neighbourhood")
+
+#icon_location <- "/home/jared/Documents/Coursera/Developing Data Products/Assignment1/house-icon3.png"
+icon_location <- "house-icon3.png"
+
+library(leaflet)
+
+propertyIcon <- makeIcon(
+  iconUrl = icon_location,
+  iconWidth = 20,
+  iconHeight = 20
+)
+```
+
+## City of Edmonton Property Assessments Data Visualizations
+#### Data as of: December 31, 2017
+
+The following four charts are for illustration only, for comparing 4 visualizations that map Property Assessment data in the City of Edmonton.
+
+### Data
+
+Assessment data comes from Edmonton's open data portal:
+https://data.edmonton.ca/City-Administration/Property-Assessment-Data/q7d6-ambg
+
+Edmonton census data (Population by Neighbourhood) is also used:
+https://data.edmonton.ca/Census/2016-Census-Population-by-Age-Range-Neighbourhood-/phd4-y42v
+
+
+### Code
+All code can be found here: 
+
+* Github master repo: https://github.com/petbadger/datasciencecoursera
+
+The HTML Leaflet output is here:
+
+* Github pages: http://petbadger.github.io/datasciencecoursera/index.html
+
+
+## Map 1: Basic
+
+A visualization showing only the geolocated highest single valued property for each residential neighbourhood.
+
+
+```{r map1}
+my_map1 <- leaflet(df) %>%
+  addTiles() %>%
+  addMarkers(lng=~Longitude, lat=~Latitude, popup=~Neighbourhood, label=~Assessed_Value_Dollar,
+             icon=propertyIcon )
+my_map1
+```
+
+
+
+## Map 2: Clustering
+
+The same as Map 1, but properties are clustered for easier viewing. 
+
+```{r map2}  
+my_map2 <- leaflet(df) %>%
+  addTiles() %>%
+  addMarkers(lng=~Longitude, lat=~Latitude, popup=~Neighbourhood, label=~Assessed_Value_Dollar,
+             clusterOptions = markerClusterOptions(), icon=propertyIcon )
+my_map2
+```
+
+
+## Map 3: Bubble size
+
+The same as Map 1, but size of bubble represents the value of the property, propotional to each other.
+
+```{r map3}
+my_map3 <- leaflet(joined) %>%
+  addTiles() %>%
+  addCircleMarkers(lng=~Longitude, lat=~Latitude, popup=~Neighbourhood, label=~Assessed_Value_Dollar,
+                   weight=1, radius=~Assessed_Value_Amount/1000000 )
+my_map3
+```
+
+
+## Map 4: Cluster and bubble
+
+This map uses both clustering and bubble size feature. There is one small difference, the size of bubble in this case represents the size of the neighbourhood population. _(Note that the Census appears incomplete as there is 0 population for some neighbourhoods.)_
+
+```{r map4}
+#Size of bubble is proportional to Per 1000 population within the neighbourhood
+my_map4 <- leaflet(joined) %>%
+  addTiles() %>%
+  addCircleMarkers(lng=~Longitude, lat=~Latitude, popup=~Neighbourhood, label=~Assessed_Value_Dollar,
+                   clusterOptions = markerClusterOptions(), weight=1, radius=~Total_Pop/100 )
+my_map4
+
+```
+

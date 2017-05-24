@@ -1,0 +1,72 @@
+---
+title: "Linux Distribution Popularity"
+author: "Jared Prins"
+date: "May 18, 2017"
+output:
+  ioslides_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+```{r, echo=FALSE, include=FALSE}
+library(dplyr)
+library(plotly)
+library(readODS)
+
+distros <- read_ods(path = "distrowatch_data.ods", sheet = 2, col_names = TRUE, col_types = NULL,
+                    na = "", skip = 0, formula_as_formula = FALSE, range = NULL)
+
+hdr <- c("Rank", "Distribution", "HitsPerDay", "Year")
+
+names(distros) <- hdr
+
+ubuntu <- distros %>%
+  filter(Distribution %in% c("Ubuntu", "Mint", "Debian") )
+```
+
+
+## Distrowatch
+
+[Distrowatch](http://distrowatch.com/) is a website which provides news, popularity rankings, and other general information about various Linux distributions ([link][1]). It has ranked the popularity of linux distributions dating as far back as 2002.  
+
+__It's important to note that this data is purely for fun.__ Even the creator of Distrowatch is quoted for saying that the data on Distrowatch is highly questionable.  
+
+
+## 3 Popular Distributions
+
+- Debian Linux has a long and proud history, being one of the earliest operating systems based on the Linux kernel ([link][2]). Many Linux distributions use Debian as a codebase. Two of the more popular ones are Ubuntu and Mint.
+- Ubuntu Linux is named after the Southern African philosophy of ubuntu which can be loosely translated as "humanity to others" or "I am what I am because of who we all are" ([link][3]).
+- Linux Mint is a community-driven Linux distribution based on Debian and Ubuntu that strives to be a "modern, elegant and comfortable operating system ([link][4]).
+
+
+## History of Ubuntu, Mint and Debian Linux popularity
+```{r plot, echo=FALSE}
+p <- plot_ly(ubuntu, x = ~Year, y = ~HitsPerDay, text = ~Distribution, type = 'scatter', mode = 'markers', size = ~HitsPerDay, color = ~Distribution, colors = 'Paired',
+             marker = list(opacity = 0.7, sizemode = 'diameter')) %>%
+  layout(title = 'According to Distrowatch.com data',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE),
+         showlegend = FALSE)
+p
+
+```
+
+## Brief Explanation
+
+Debian has always had a loyal and slow growing user adoption.  But it was not a very user friendly Linux Distribution for everyday users.
+
+Ubuntu changed this by adding user-friendly features on top of Debian. It drew massive user adoption.
+
+Mint came out of nowhere in an attempt to be even more user friendly, particularly drawing on MS Windows users. Mint popularity exploded.
+
+As more and more choices of linux distributions are available, even the popular distributions such as Mint and Ubuntu begin to lose market share. 
+
+
+[1]: https://en.wikipedia.org/wiki/DistroWatch
+[2]: https://en.wikipedia.org/wiki/Debian
+[3]: https://en.wikipedia.org/wiki/Ubuntu_(operating_system)
+[4]: https://en.wikipedia.org/wiki/Linux_Mint
+
